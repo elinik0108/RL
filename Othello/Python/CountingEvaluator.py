@@ -1,6 +1,10 @@
 from OthelloEvaluator import OthelloEvaluator
 
-
+  """
+    A simple evaluator that just counts the number of black and white squares 
+    Author: Ola Ringdahl
+  """
+ 
 class CountingEvaluator(OthelloEvaluator):
     def evaluate(self, othello_position):
         black_squares = 0
