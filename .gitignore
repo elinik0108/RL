@@ -1,0 +1,7 @@
+venv/**
+.vscode/**
+.DS_Store
+RL/pong/__pycache__/**
+RL/pong/recordings/**
+RL/bandit/__pycache__/**
+RL/bandit/.pytest_cache/**

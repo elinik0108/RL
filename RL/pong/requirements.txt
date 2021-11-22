@@ -1,0 +1,3 @@
+git+https://github.com/TimKam/ma-gym.git
+numpy
+pyglet==1.5.11

@@ -1,0 +1,101 @@
+import numpy
+import random
+from collections import defaultdict
+
+
+def reshape_obs(observation):
+    """
+    Reshapes and 'discretizes' an observation for Q-table read/write
+
+    :param observation: The to-be-reshaped/discretized observation
+    :return: The reshaped/discretized observation
+    """
+    # TODO: Discretize/simplify
+    # transformation
+    return f'{numpy.asarray(observation).reshape(-1, 10)}'
+
+
+class Agent:
+    """
+    Skeleton q-learner agent that the students have to implement
+    """
+
+    def __init__(
+            self, number, actions_n, obs_space_shape,
+            gamma=1, # pick reasonable values for all of these!
+            epsilon=1,
+            min_epsilon=1,
+            epsilon_decay=1,
+            alpha=1
+    ):
+        """
+        Initiates the agent
+
+        :param number: The agent's number/id in the game environment
+        :param actions_n: The number of actions in the agent's action space
+        :param obs_space_shape: The shape of the agents observation space
+        :param gamma: Depreciation factor for expected future rewards
+        :param epsilon: The initial/current exploration rate
+        :param min_epsilon: The minimal/final exploration rate
+        :param epsilon_decay: The rate of epsilon/exploration decay
+        :param alpha: The learning rate
+        """
+        self.number = number
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.min_epsilon = min_epsilon
+        self.epsilon_decay = epsilon_decay
+        self.actions_n = actions_n
+        self.obs_space_shape = obs_space_shape
+        self.alpha = alpha
+        self.q = defaultdict(lambda: numpy.zeros(self.actions_n))
+        self.policy = self.generate_policy()
+
+    def generate_policy(self):
+        """
+        Creates an epsilon-greedy policy based
+        on a given Q-function and epsilon.
+
+        :return: A function that takes the state
+        as an input and returns the probabilities
+        for each action in the form of a numpy array
+        of length of the action space.
+        """
+
+        def determine_action_probabilities(observation):
+            """
+
+            :param observation: The agent's current observation
+            :return: The probabilities for each action in the form of a numpy
+            array of length of the action space.
+            """
+            # TODO: implement this!
+
+        return determine_action_probabilities
+
+    def act(self, observation):
+        """
+        Determines and action, given the current observation.
+        :param observation: the agent's current observation of the state of
+        the world
+        :return: the agent's action
+        """
+        # TODO: implement this!
+        return random.randint(0,2)
+
+    def update_history(
+            self, observation, action, reward, new_observation
+    ):
+        """
+
+        :param observation: The observation *before* the action
+        :param action: The action that has been executed
+        :param reward: The reward the action has yielded
+        :param new_observation: The observation *after* the action
+        :return:
+        """
+        next_action = numpy.argmax(self.q[reshape_obs(new_observation)])
+        td_target = reward + self.gamma * self.q[reshape_obs(new_observation)][next_action]
+        td_delta = td_target - self.q[reshape_obs(observation)][action]
+        self.q[reshape_obs(observation)][action] += self.alpha * td_delta
+
