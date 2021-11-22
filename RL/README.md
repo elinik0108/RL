@@ -58,6 +58,8 @@ Install the dependencies for this part of the assignment (instead of using the `
 pip install --user -r requirements.txt
 ```
 
+**Please do not make use of additional dependencies.**
+
 Open the ``MyBandit.py`` file in the project's root directory. You will see an implementation of a simple epsilon-greedy bandit.
 Your task is to improve the bandit and so that you can beat the initial bandit's performance reliably.
 Your improvements must be algorithmically and not just parameter tuning.
@@ -99,6 +101,9 @@ Install the dependencies for this part of the assignment:
 ```
 pip install --user -r requirements.txt
 ```
+
+**Please do not make use of additional dependencies.**
+Exceptions are the optional stretch tasks.
 
 Open the ``Agent.py`` file in the project's root directory.
 Here, you find the skeleton of the ``Agent`` class you need to implement.
