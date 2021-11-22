@@ -33,7 +33,7 @@ def simulate():
         iterations = int(math.floor(1000 * (random.random()) + 0.5))
         bandit_reward = simulator.simulate(bandit, iterations)
         ref_bandit_reward = simulator.simulate(ref_bandit, iterations)
-        ref_plus_bonus = ref_bandit_reward * 1.4
+        ref_plus_bonus = ref_bandit_reward * 1.35
         result = 0
         if (bandit_reward > ref_plus_bonus):
             result = 1
@@ -45,4 +45,4 @@ def test_performance():
     """
     Checks if the simulation is good enough to pass
     """
-    assert sum(simulate()) > 16
+    assert sum(simulate()) > 15

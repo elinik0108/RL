@@ -23,26 +23,21 @@ def simulate(bandit, iterations):
     :param iterations: The number of iterations that the bandit should be run
     :return:
     """
-    acc_rewards = [0 for _ in range(6)]
 
-    for _ in range(iterations):
-        expected_rewards_approx = [
-            1 + (random() / 2) for _ in range(6)
-        ]
-        expected_rewards_approx[randrange(0,5)] = -5
-        expected_rewards_approx[randrange(0,5)] = -10
-        for (index, reward) in enumerate(expected_rewards_approx):
-            expected_rewards_approx[index] = reward + (random() - 0.5) * reward * 0.75
-        for arm_index in range(6):
-            acc_rewards[arm_index] = acc_rewards[arm_index] + generate_reward(arm_index, expected_rewards_approx)
+    # Determine expected rewards
+    expected_rewards_approx = [
+        1 + (random() / 2) for _ in range(6)
+    ]
+    expected_rewards_approx[randrange(0,5)] = -12
+    expected_rewards_approx[randrange(0,5)] = -20
+    for (index, reward) in enumerate(expected_rewards_approx):
+        expected_rewards_approx[index] = reward + (random() - 0.5) * reward * 0.75
 
-    print('Reward comparison of the different arms:')
-    print([r / 10000 for r in acc_rewards])
-
+    # Run bandit
     for _ in range(iterations):
         arm = bandit.run()
         reward = generate_reward(bandit.arms.index(arm), expected_rewards_approx)
         bandit.give_feedback(arm, reward)
-    print('Frequencies')
-    print(bandit.frequencies)
+    #print('Frequencies')
+    #print(bandit.frequencies)
     return sum(bandit.sums)

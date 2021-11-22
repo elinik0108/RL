@@ -4,7 +4,7 @@ import random
 
 class ReferenceBandit:
     """
-    Generic epsilon-greedy bandit that you need to benchmark again
+    Generic epsilon-greedy bandit that you need to benchmark against
     """
     def __init__(self, arms, epsilon=0.1):
         """
