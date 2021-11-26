@@ -16,7 +16,7 @@ you can make changes for debugging purposes.
 """
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Random Agent for ma-gym')
+    parser = argparse.ArgumentParser(description='Pong simulator for ma-gym')
     parser.add_argument('--env', default='PongDuel-v0',
                         help='Name of the environment (default: %(default)s)')
     parser.add_argument('--episodes', type=int, default=550,
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                     observations
                 )
             # Debug: print obs, rewards, info
-            # print(obs_n, reward_n, info)
+            # print(observations, rewards, infos)
             for (index, reward) in enumerate(rewards):
                 ep_rewards[index] += reward
             env.render()

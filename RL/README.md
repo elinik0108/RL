@@ -96,6 +96,9 @@ We do not guarantee that the provided information is academically precise, but i
 Make sure you have git [installed and configured](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 You will need it for dependency installation (not for version control).
 Navigate into the ``assignments/Assignment_2_RL/pong`` folder in the project you have downloaded.
+
+**Important:** If you work on Windows, install [ffmpeg](https://windowsloop.com/install-ffmpeg-windows-10/).
+
 Install the dependencies for this part of the assignment:
 
 ```
@@ -110,7 +113,7 @@ Here, you find the skeleton of the ``Agent`` class you need to implement.
 When running ``pong.py``, i.e. the simulation environment, you will see that your agent can already interact with the environment.
 However, it does not learn!
 By implementing the methods sketched out in ``Agent.py``, your task is to make the agent learn and become a decent pong player.
-Write an agent that uses basic Q-learning (not deep Q-learning) and that learns fast enough to have a `#wins - #losses` performance of more than 1000 after around 350 episodes.
+Write an agent that uses basic Q-learning (not deep Q-learning) and that learns fast enough to have a `#wins - #losses` performance of more than 1000 after around 350 episodes (an episode consists of 20 games).
 Record a GIF that shows how your agent performs around this stage, see this example:
 
 ![pong.gif](pong.gif)

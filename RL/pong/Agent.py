@@ -6,8 +6,11 @@ from collections import defaultdict
 def reshape_obs(observation):
     """
     Reshapes and 'discretizes' an observation for Q-table read/write
+    Make sure the state space is not too large!
 
-    :param observation: The to-be-reshaped/discretized observation
+    :param observation: The to-be-reshaped/discretized observation. Contains the position of the
+    'players', as well as the position and movement.
+    direction of the ball.
     :return: The reshaped/discretized observation
     """
     # TODO: Discretize/simplify
@@ -49,29 +52,17 @@ class Agent:
         self.obs_space_shape = obs_space_shape
         self.alpha = alpha
         self.q = defaultdict(lambda: numpy.zeros(self.actions_n))
-        self.policy = self.generate_policy()
 
-    def generate_policy(self):
+    def determine_action_probabilities(self, observation):
         """
-        Creates an epsilon-greedy policy based
-        on a given Q-function and epsilon.
-
-        :return: A function that takes the state
-        as an input and returns the probabilities
-        for each action in the form of a numpy array
-        of length of the action space.
+        A function that takes the state as an input and returns the probabilities for each
+        action in the form of a numpy array of length of the action space.
+        :param observation: The agent's current observation
+        :return: The probabilities for each action in the form of a numpy
+        array of length of the action space.
         """
-
-        def determine_action_probabilities(observation):
-            """
-
-            :param observation: The agent's current observation
-            :return: The probabilities for each action in the form of a numpy
-            array of length of the action space.
-            """
-            # TODO: implement this!
-
-        return determine_action_probabilities
+        # TODO: implement this!
+        return # action_probabilities
 
     def act(self, observation):
         """
@@ -80,7 +71,8 @@ class Agent:
         the world
         :return: the agent's action
         """
-        # TODO: implement this!
+        # TODO: implement this! Here, you will need to call
+        # `determine_action_probabilities(observation)`
         return random.randint(0,2)
 
     def update_history(
