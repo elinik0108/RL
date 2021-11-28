@@ -118,6 +118,9 @@ Record a GIF that shows how your agent performs around this stage, see this exam
 
 ![pong.gif](pong.gif)
 
+Note that to achieve the expected performance, you _may_ want to write a script that tries out different parameters (gamma, epsilon, et cetera, but also different extents of state simplification) and logs the number of wins after 350 episodes for every parameter combination.
+The script is merely a helper and you do not need to submit it.
+
 As stretch tasks, you may want to implement a planner that achieves the same objective, or a Deep learner.
 If so, please still submit a copy of the basic Q-learner.
 Note that the stretch tasks are entirely optional and may take a lot of time to complete.

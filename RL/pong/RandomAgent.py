@@ -6,13 +6,13 @@ class RandomAgent:
     'Pong' agent that always takes a random action
     """
 
-    def __init__(self, number):
+    def __init__(self, id):
         """
         Initiates the agent
 
-        :param number: The agent's number/id in the game environment
+        :param id: The agent's id in the game environment
         """
-        self.number = number
+        self.id = id
 
     def act(self, observation):
         """

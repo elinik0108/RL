@@ -2,6 +2,7 @@ import argparse
 
 import gym
 from ma_gym.wrappers import Monitor
+# import matplotlib.pyplot as plt # plotting dependency
 
 from Agent import Agent
 from RandomAgent import RandomAgent
@@ -40,6 +41,7 @@ if __name__ == '__main__':
 
     wins = []
     losses = []
+    win_loss_history = []
     # Run for a number of episodes
     for ep_i in range(args.episodes):
         are_done = [False for _ in range(env.n_agents)]
@@ -66,12 +68,15 @@ if __name__ == '__main__':
             for agent in agents:
                 agent.update_history(
                     prev_observations,
-                    actions[agent.number],
-                    rewards[agent.number],
+                    actions[agent.id],
+                    rewards[agent.id],
                     observations
                 )
             # Debug: print obs, rewards, info
             # print(observations, rewards, infos)
+            # Rewards are either 0 or [1, -1], or [-1, 1], try out by out-commenting the line below
+            # Note that your agent is agent 0
+            # if not (rewards[0] == 0 and rewards[1] == 0): print(rewards)
             for (index, reward) in enumerate(rewards):
                 ep_rewards[index] += reward
             env.render()
@@ -83,10 +88,17 @@ if __name__ == '__main__':
         else:
             wins.append(bottom_line)
             losses.append(0)
+        win_loss_history.append(sum(wins) - sum(losses))
         print('Episode #{} Rewards: {}'.format(ep_i, ep_rewards))
         print(f'Wins - losses: {sum(wins) - sum(losses)}')
         print(f'Epsilon: {my_agent.epsilon}')
         print(f'Q table size: {len(my_agent.q)}')
         if len(wins) > 10:
             print(f'Last 10 games: {sum(wins[-10:]) - sum(losses[-10:])}')
+        # remove comments for a primitive plot; also remove comment for dependency (line 5)!
+        # plt.clf()
+        # plt.cla()
+        # plt.close()
+        # plt.plot(win_loss_history)
+        # plt.pause(0.1)
     env.close()

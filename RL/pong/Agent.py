@@ -24,7 +24,7 @@ class Agent:
     """
 
     def __init__(
-            self, number, actions_n, obs_space_shape,
+            self, id, actions_n, obs_space_shape,
             gamma=1, # pick reasonable values for all of these!
             epsilon=1,
             min_epsilon=1,
@@ -34,8 +34,8 @@ class Agent:
         """
         Initiates the agent
 
-        :param number: The agent's number/id in the game environment
-        :param actions_n: The number of actions in the agent's action space
+        :param id: The agent's id in the game environment
+        :param actions_n: The id of actions in the agent's action space
         :param obs_space_shape: The shape of the agents observation space
         :param gamma: Depreciation factor for expected future rewards
         :param epsilon: The initial/current exploration rate
@@ -43,7 +43,7 @@ class Agent:
         :param epsilon_decay: The rate of epsilon/exploration decay
         :param alpha: The learning rate
         """
-        self.number = number
+        self.id = id
         self.gamma = gamma
         self.epsilon = epsilon
         self.min_epsilon = min_epsilon
@@ -79,6 +79,7 @@ class Agent:
             self, observation, action, reward, new_observation
     ):
         """
+        Updates the agent's Q-table
 
         :param observation: The observation *before* the action
         :param action: The action that has been executed
@@ -86,6 +87,7 @@ class Agent:
         :param new_observation: The observation *after* the action
         :return:
         """
+        # counterfactual next action, to later backpropagate reward to current action
         next_action = numpy.argmax(self.q[reshape_obs(new_observation)])
         td_target = reward + self.gamma * self.q[reshape_obs(new_observation)][next_action]
         td_delta = td_target - self.q[reshape_obs(observation)][action]
