@@ -112,8 +112,9 @@ Open the ``Agent.py`` file in the project's root directory.
 Here, you find the skeleton of the ``Agent`` class you need to implement.
 When running ``pong.py``, i.e. the simulation environment, you will see that your agent can already interact with the environment.
 However, it does not learn!
+More precisely, while the agent already keeps track of the performance of its actions (it creates a Q-table), the data is not used to decide on the action that is to be executed in a given state.
 By implementing the methods sketched out in ``Agent.py``, your task is to make the agent learn and become a decent pong player.
-Write an agent that uses basic Q-learning (not deep Q-learning) and that learns fast enough to have a `#wins - #losses` performance of more than 1000 after around 350 episodes (an episode consists of 20 games).
+**Write an agent that uses basic Q-learning (not deep Q-learning) and that learns fast enough to have a `#wins - #losses` performance of more than 1000 after around 350 episodes (an episode consists of 20 games).**
 Record a GIF that shows how your agent performs around this stage, see this example:
 
 ![pong.gif](pong.gif)
