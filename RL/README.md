@@ -64,8 +64,8 @@ Open the ``MyBandit.py`` file in the project's root directory. You will see an i
 Your task is to improve the bandit and so that you can beat the initial bandit's performance reliably.
 Your improvements must be algorithmically and not just parameter tuning.
 
-**Success criterion:** Out of 20 simulation runs with 1.000 +/-500 "pulled arms" each, your new  bandit should outperform the reference bandit by at least 35% (35% more reward gained) in at least 16 runs.
-**Note that the rewards per arm will be adjusted after each of the 20 simulation runs; i.e., your bandit must be capable of adjusting to these changes.**
+**Success criterion:** Out of 20 simulation runs with 500 +/-500 "pulled arms" each, your new  bandit should outperform the reference bandit by at least 35% (35% more reward gained) in at least 16 runs.
+**Let us highlight that the rewards per arm will be adjusted after each of the 20 simulation runs; i.e., your bandit must be capable of adjusting to these changes.** **Note:** the 20 simulation runs are not independent, i.e. the bandit are not being re-set! Instead, they simulate changes in the environment, as highlighted in the lecture and the workshop.
 
 To test your implementation, run ``pytest`` in the repository's root directory.
 Note that you are working in a stochastic world.
