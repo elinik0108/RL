@@ -113,6 +113,8 @@ Install the dependencies for this part of the assignment:
 pip install --user -r requirements.txt
 ```
 
+In case you see ``ERROR: Failed building wheel for gym`` on your console, you can most likely ignore this, as the backup installation procedure should be successfully executed.
+
 **Please do not make use of additional dependencies.**
 Exceptions are the optional stretch tasks.
 
