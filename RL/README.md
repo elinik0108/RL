@@ -97,7 +97,15 @@ Make sure you have git [installed and configured](https://git-scm.com/book/en/v2
 You will need it for dependency installation (not for version control).
 Navigate into the ``assignments/Assignment_2_RL/pong`` folder in the project you have downloaded.
 
-**Important:** If you work on Windows, install [ffmpeg](https://windowsloop.com/install-ffmpeg-windows-10/).
+**Important:**
+
+1. If you work on Windows, install [ffmpeg](https://windowsloop.com/install-ffmpeg-windows-10/).
+
+2. Because of backwards compatibility issues, you first need to fix the dependency management versions of your python installation by running:
+
+```
+pip install setuptools==65.5.0 pip==21
+```
 
 Install the dependencies for this part of the assignment:
 
@@ -127,6 +135,8 @@ If so, please still submit a copy of the basic Q-learner.
 Note that the stretch tasks are entirely optional and may take a lot of time to complete.
 
 ### Report Section
+**Important**: we will run a tournament in order to determine the best agent among submissions and announce the best two agents (winner and runner-up afterwards). In case you do not want your agent to compete, indicate this on the title page of your report.
+
 Analogously to the first part of the assignment, document in the report:
 
 1. how you proceeded, *i.e.* describe your solution approach conceptually and precisely;
