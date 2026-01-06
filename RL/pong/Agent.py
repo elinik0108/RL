@@ -9,17 +9,47 @@ def reshape_obs(observation):
     Make sure the state space is not too large!
 
     :param observation: The to-be-reshaped/discretized observation. Contains the position of the
-    'players', as well as the position and movement.
-    direction of the ball.
+    'players', as well as the position and movement direction of the ball.
     :return: The reshaped/discretized observation
     """
-    """
-    Groups continuous positions into discrete bins so the Q-table 
-    can actually find matches.
-    """
+    obs = numpy.asarray(observation).flatten()
+    
+    # Extract relevant information from observation
+    # Assuming observation structure: [player1_y, player2_y, ball_x, ball_y, ball_vx, ball_vy, ...]
+    # You may need to adjust indices based on your actual observation structure
+    
+    # Agents position on y axel. Agent is moving always on y axel so we don't need x.
+    paddle_y = obs[0]
+    
+    # Ball position
+    ball_x = obs[2]
+    ball_y = obs[3]
+    
+    # Ball vel on x axel
+    ball_vx = obs[4]
+
+    # Ball vel on y axel
+    ball_vy = obs[5]
+    
+    # Discretize positions 
+    discretization_factor = 10
+    
+    disc_paddle_y = int((paddle_y* 100) / discretization_factor)
+    disc_ball_x = int((ball_x *100) / discretization_factor)
+    disc_ball_y = int((ball_y *100)/ discretization_factor)
+    
+    ball_dir_x = numpy.sign(ball_vx)
+    ball_dir_y = numpy.sign(ball_vy)
+    
+    # Create state tuple
+    state = (disc_paddle_y, disc_ball_x, disc_ball_y, ball_dir_x, ball_dir_y)
+    
+    return state
     # Scaling by 10 and rounding to integers is a common way to 'bin' coordinates.
     # We convert to a tuple because dictionary keys must be hashable.
-    return tuple(numpy.round(observation, 1))
+    # return tuple(numpy.round(observation, 1))
+
+    #return f'{numpy.asarray(observation).reshape(-1, 10)}'
 
 class Agent:
     """
@@ -27,12 +57,14 @@ class Agent:
     """
 
     def __init__(
+            
+            ## based on script these values had best performance
             self, id, actions_n, obs_space_shape,
-            gamma=0.99, # Focuses on long-term rewards.
-            epsilon=1.0, # Start with 100% exploration
-            min_epsilon=0.01, # Always keep a 1% chance of acting randomly to handle unexpected situations.
-            epsilon_decay=0.999, # A very slow decay to ensure the agent explores enough in the early episodes.
-            alpha=0.1 # A moderate learning rate so the agent doesn't overreact to a single point.
+            gamma=0.9,
+            epsilon=1.0,
+            min_epsilon=0.01,
+            epsilon_decay=0.995,
+            alpha=0.05
     ):
         """
         Initiates the agent
@@ -56,18 +88,37 @@ class Agent:
         self.alpha = alpha
         self.q = defaultdict(lambda: numpy.zeros(self.actions_n))
 
-    def determine_action_probabilities(self, observation):
-        state = reshape_obs(observation)
-        q_values = self.q[state]
+        self.step_counter = 0
 
-        # Assign equal probability (epsilon / n) to all actions for exploration
-        probs = numpy.ones(self.actions_n) * (self.epsilon / self.actions_n)
+    def determine_action_probabilities(self, observation):
+        """
+        A function that takes the state as an input and returns the probabilities for each
+        action in the form of a numpy array of length of the action space.
         
-        # Find the best action from the Q-table
+        Uses epsilon-greedy strategy:
+        - With probability epsilon: uniform random action (exploration)
+        - With probability 1-epsilon: best action according to Q-table (exploitation)
+        
+        :param observation: The agent's current observation
+        :return: The probabilities for each action in the form of a numpy
+        array of length of the action space.
+        """
+        # Get the discretized state
+        state = reshape_obs(observation)
+        
+        # Get Q-values for this state
+        q_values = self.q[state]
+        
+        # Find the highest q-value
         best_action = numpy.argmax(q_values)
         
-        # Add the remaining (1 - epsilon) probability to the best action for exploitation
-        probs[best_action] += (1.0 - self.epsilon)        return probs
+        # Initialize probabilities array
+        action_probabilities = numpy.ones(self.actions_n) * (self.epsilon / self.actions_n)
+        
+        ## the best action should have the highest probability
+        action_probabilities[best_action] += (1.0 - self.epsilon)
+        
+        return action_probabilities
         """
         A function that takes the state as an input and returns the probabilities for each
         action in the form of a numpy array of length of the action space.
@@ -76,16 +127,18 @@ class Agent:
         array of length of the action space.
         """
     def act(self, observation):
-        # Get the epsilon-greedy probabilities
-        probs = self.determine_action_probabilities(observation)
+        """
+        Determines an action, given the current observation.
         
-        # Choose an action based on the probability distribution
-        action = numpy.random.choice(numpy.arange(self.actions_n), p=probs)
+        :param observation: the agent's current observation of the state of the world
+        :return: the agent's action
+        """
+        # Get action probabilities using epsilon-greedy strategy
+        action_probs = self.determine_action_probabilities(observation)
         
-        # Decay epsilon: gradually move from exploring to exploiting
-        if self.epsilon > self.min_epsilon:
-            self.epsilon *= self.epsilon_decay
-            self.epsilon = max(self.epsilon, self.min_epsilon)        return action
+        action = numpy.random.choice(self.actions_n, p=action_probs)
+        
+        return action
         """
         Determines and action, given the current observation.
         :param observation: the agent's current observation of the state of
@@ -97,7 +150,7 @@ class Agent:
             self, observation, action, reward, new_observation
     ):
         """
-        Updates the agent's Q-table
+        Updates the agent's Q-table using Q-learning update rule
 
         :param observation: The observation *before* the action
         :param action: The action that has been executed
@@ -105,9 +158,17 @@ class Agent:
         :param new_observation: The observation *after* the action
         :return:
         """
-        # counterfactual next action, to later backpropagate reward to current action
-        next_action = numpy.argmax(self.q[reshape_obs(new_observation)])
-        td_target = reward + self.gamma * self.q[reshape_obs(new_observation)][next_action]
-        td_delta = td_target - self.q[reshape_obs(observation)][action]
-        self.q[reshape_obs(observation)][action] += self.alpha * td_delta
+        # Get discretized states
+        state = reshape_obs(observation)
+        next_state = reshape_obs(new_observation)
+        
+        # update
+        next_action = numpy.argmax(self.q[next_state])
+        td_target = reward + self.gamma * self.q[next_state][next_action]
+        td_delta = td_target - self.q[state][action]
+        self.q[state][action] += self.alpha * td_delta
 
+
+        # decrease the epsilon by the decay vlaue
+        self.step_counter += 1
+        self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)

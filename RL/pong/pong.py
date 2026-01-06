@@ -2,7 +2,7 @@ import argparse
 
 import gym
 from ma_gym.wrappers import Monitor
-# import matplotlib.pyplot as plt # plotting dependency
+import matplotlib.pyplot as plt # plotting dependency
 
 from Agent import Agent
 from RandomAgent import RandomAgent
@@ -42,6 +42,11 @@ if __name__ == '__main__':
     wins = []
     losses = []
     win_loss_history = []
+    plot_saved = False
+    
+    plt.ion()
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
     # Run for a number of episodes
     for ep_i in range(args.episodes):
         are_done = [False for _ in range(env.n_agents)]
@@ -80,6 +85,7 @@ if __name__ == '__main__':
             for (index, reward) in enumerate(rewards):
                 ep_rewards[index] += reward
             env.render()
+        
         # Aggregate wins and losses
         bottom_line = ep_rewards[0]
         if bottom_line < 0:
@@ -88,17 +94,48 @@ if __name__ == '__main__':
         else:
             wins.append(bottom_line)
             losses.append(0)
-        win_loss_history.append(sum(wins) - sum(losses))
+        
+        current_differential = sum(wins) - sum(losses)
+        win_loss_history.append(current_differential)
+        
         print('Episode #{} Rewards: {}'.format(ep_i, ep_rewards))
-        print(f'Wins - losses: {sum(wins) - sum(losses)}')
+        print(f'Wins - losses: {current_differential}')
         print(f'Epsilon: {my_agent.epsilon}')
         print(f'Q table size: {len(my_agent.q)}')
         if len(wins) > 10:
             print(f'Last 10 games: {sum(wins[-10:]) - sum(losses[-10:])}')
-        # remove comments for a primitive plot; also remove comment for dependency (line 5)!
-        # plt.clf()
-        # plt.cla()
-        # plt.close()
-        # plt.plot(win_loss_history)
-        # plt.pause(0.1)
+
+
+        ## plotting
+        ax.clear()
+        ax.plot(win_loss_history, linewidth=2, color='blue', label='Performance')
+        ax.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+        ax.axhline(y=1000, color='red', linestyle='--', alpha=0.7, label='Target: 1000')
+        ax.set_xlabel('Episode', fontsize=12)
+        ax.set_ylabel('Win-Loss diff', fontsize=12)
+        ax.set_title('Agents win history', fontsize=14, fontweight='bold')
+        ax.grid(True, alpha=0.3)
+        ax.legend()
+        plt.pause(0.01)
+
+        if current_differential > 1000 and not plot_saved:
+            filename = f'pong_performance_episode_{ep_i}_diff_{current_differential}.png'
+            fig.savefig(filename, dpi=150, bbox_inches='tight')
+            plot_saved = True
+
+    # Save final plot at the end
+    ax.clear()
+    ax.plot(win_loss_history, linewidth=2, color='blue', label='Performance')
+    ax.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    ax.axhline(y=1000, color='red', linestyle='--', alpha=0.7, label='Target: 1000')
+    ax.set_xlabel('Episode', fontsize=12)
+    ax.set_ylabel('Win-Loss difference', fontsize=12)
+    ax.set_title('Agents win history', fontsize=14, fontweight='bold')
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+    fig.savefig('pong_final_performance.png', dpi=150, bbox_inches='tight')
+    
+    plt.ioff()  # Turn off interactive mode
+    plt.show()  # Keep plot window open at the end
+    
     env.close()
