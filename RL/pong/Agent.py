@@ -13,10 +13,13 @@ def reshape_obs(observation):
     direction of the ball.
     :return: The reshaped/discretized observation
     """
-    # TODO: Discretize/simplify
-    # transformation
-    return f'{numpy.asarray(observation).reshape(-1, 10)}'
-
+    """
+    Groups continuous positions into discrete bins so the Q-table 
+    can actually find matches.
+    """
+    # Scaling by 10 and rounding to integers is a common way to 'bin' coordinates.
+    # We convert to a tuple because dictionary keys must be hashable.
+    return tuple(numpy.round(observation, 1))
 
 class Agent:
     """
@@ -25,11 +28,11 @@ class Agent:
 
     def __init__(
             self, id, actions_n, obs_space_shape,
-            gamma=1, # pick reasonable values for all of these!
-            epsilon=1,
-            min_epsilon=1,
-            epsilon_decay=1,
-            alpha=1
+            gamma=0.99, # Focuses on long-term rewards.
+            epsilon=1.0, # Start with 100% exploration
+            min_epsilon=0.01, # Always keep a 1% chance of acting randomly to handle unexpected situations.
+            epsilon_decay=0.999, # A very slow decay to ensure the agent explores enough in the early episodes.
+            alpha=0.1 # A moderate learning rate so the agent doesn't overreact to a single point.
     ):
         """
         Initiates the agent
@@ -54,6 +57,17 @@ class Agent:
         self.q = defaultdict(lambda: numpy.zeros(self.actions_n))
 
     def determine_action_probabilities(self, observation):
+        state = reshape_obs(observation)
+        q_values = self.q[state]
+
+        # Assign equal probability (epsilon / n) to all actions for exploration
+        probs = numpy.ones(self.actions_n) * (self.epsilon / self.actions_n)
+        
+        # Find the best action from the Q-table
+        best_action = numpy.argmax(q_values)
+        
+        # Add the remaining (1 - epsilon) probability to the best action for exploitation
+        probs[best_action] += (1.0 - self.epsilon)        return probs
         """
         A function that takes the state as an input and returns the probabilities for each
         action in the form of a numpy array of length of the action space.
@@ -61,19 +75,23 @@ class Agent:
         :return: The probabilities for each action in the form of a numpy
         array of length of the action space.
         """
-        # TODO: implement this!
-        return # action_probabilities
-
     def act(self, observation):
+        # Get the epsilon-greedy probabilities
+        probs = self.determine_action_probabilities(observation)
+        
+        # Choose an action based on the probability distribution
+        action = numpy.random.choice(numpy.arange(self.actions_n), p=probs)
+        
+        # Decay epsilon: gradually move from exploring to exploiting
+        if self.epsilon > self.min_epsilon:
+            self.epsilon *= self.epsilon_decay
+            self.epsilon = max(self.epsilon, self.min_epsilon)        return action
         """
         Determines and action, given the current observation.
         :param observation: the agent's current observation of the state of
         the world
         :return: the agent's action
         """
-        # TODO: implement this! Here, you will need to call
-        # `determine_action_probabilities(observation)`
-        return random.randint(0,2)
 
     def update_history(
             self, observation, action, reward, new_observation
